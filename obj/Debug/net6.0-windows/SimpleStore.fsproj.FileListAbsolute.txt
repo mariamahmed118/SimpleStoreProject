@@ -50,3 +50,7 @@ C:\Users\Safeer\OneDrive\Desktop\Simple store\SimpleStore\obj\Debug\net6.0-windo
 C:\Users\Safeer\OneDrive\Desktop\Simple store\SimpleStore\obj\Debug\net6.0-windows\SimpleStore.dll
 C:\Users\Safeer\OneDrive\Desktop\Simple store\SimpleStore\obj\Debug\net6.0-windows\SimpleStore.pdb
 C:\Users\Safeer\OneDrive\Desktop\Simple store\SimpleStore\obj\Debug\net6.0-windows\SimpleStore.genruntimeconfig.cache
+c:\Users\one way\Downloads\pro\SimpleStoreProject\obj\Debug\net6.0-windows\SimpleStore.AssemblyInfoInputs.cache
+c:\Users\one way\Downloads\pro\SimpleStoreProject\obj\Debug\net6.0-windows\SimpleStore.AssemblyInfo.fs
+c:\Users\one way\Downloads\pro\SimpleStoreProject\obj\Debug\net6.0-windows\SimpleStore.dll
+c:\Users\one way\Downloads\pro\SimpleStoreProject\obj\Debug\net6.0-windows\SimpleStore.pdb
