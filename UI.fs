@@ -1,3 +1,4 @@
+//11
 namespace SimpleStore
 
 module UI =
@@ -100,4 +101,94 @@ module UI =
         )
         loginButton.FlatAppearance.BorderSize <- 0
 
-         
+         // Sign Up Tab
+        let signupTab = new TabPage("Sign Up")
+        signupTab.BackColor <- backgroundColor
+
+        // Signup Username Label and TextBox
+        let signupUsernameLabel = new Label(
+            Text = "Username", 
+            Left = 50, 
+            Top = 50, 
+            Width = 300,
+            ForeColor = accentColor
+        )
+        let signupUsernameBox = new TextBox(
+            Left = 50, 
+            Top = 80, 
+            Width = 300,
+            BackColor = Color.White,
+            BorderStyle = BorderStyle.FixedSingle
+        )
+
+        // Signup Email Label and TextBox
+        let signupEmailLabel = new Label(
+            Text = "Email", 
+            Left = 50, 
+            Top = 130, 
+            Width = 300,
+            ForeColor = accentColor
+        )
+        let signupEmailBox = new TextBox(
+            Left = 50, 
+            Top = 160, 
+            Width = 300,
+            BackColor = Color.White,
+            BorderStyle = BorderStyle.FixedSingle
+        )
+
+        // Signup Password Label and TextBox
+        let signupPasswordLabel = new Label(
+            Text = "Password", 
+            Left = 50, 
+            Top = 210, 
+            Width = 300,
+            ForeColor = accentColor
+        )
+        let signupPasswordBox = new TextBox(
+            Left = 50, 
+            Top = 240, 
+            Width = 300,
+            UseSystemPasswordChar = true,
+            BackColor = Color.White,
+            BorderStyle = BorderStyle.FixedSingle
+        )
+
+        // Signup Button
+        let signupButton = new Button(
+            Text = "Sign Up", 
+            Left = 50, 
+            Top = 300, 
+            Width = 100,
+            BackColor = Color.Black,
+            ForeColor = accentColor,
+            FlatStyle = FlatStyle.Flat
+        )
+        signupButton.FlatAppearance.BorderSize <- 0
+
+        // Add controls to tabs
+        loginTab.Controls.AddRange([| 
+            loginUsernameLabel; 
+            loginUsernameBox; 
+            loginPasswordLabel; 
+            loginPasswordBox; 
+            loginButton 
+        |])
+
+        signupTab.Controls.AddRange([| 
+            signupUsernameLabel; 
+            signupUsernameBox; 
+            signupEmailLabel; 
+            signupEmailBox;
+            signupPasswordLabel; 
+            signupPasswordBox; 
+            signupButton 
+        |])
+
+        // Add tabs to tab control
+        tabControl.Controls.Add(loginTab)
+        tabControl.Controls.Add(signupTab)
+
+        // Add tab control to form
+        form.Controls.Add(tabControl)
+
