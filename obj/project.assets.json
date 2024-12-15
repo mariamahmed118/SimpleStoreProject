@@ -1700,31 +1700,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Safeer\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\one way\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Safeer\\OneDrive\\Desktop\\Simple store\\SimpleStore\\SimpleStore.fsproj",
+      "projectUniqueName": "c:\\Users\\one way\\SimpleStoreProject\\SimpleStore.fsproj",
       "projectName": "SimpleStore",
-      "projectPath": "C:\\Users\\Safeer\\OneDrive\\Desktop\\Simple store\\SimpleStore\\SimpleStore.fsproj",
-      "packagesPath": "C:\\Users\\Safeer\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Safeer\\OneDrive\\Desktop\\Simple store\\SimpleStore\\obj\\",
+      "projectPath": "c:\\Users\\one way\\SimpleStoreProject\\SimpleStore.fsproj",
+      "packagesPath": "C:\\Users\\one way\\.nuget\\packages\\",
+      "outputPath": "c:\\Users\\one way\\SimpleStoreProject\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Safeer\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\one way\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0-windows"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\sdk\\6.0.428\\FSharp\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
