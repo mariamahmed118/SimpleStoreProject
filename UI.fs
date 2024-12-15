@@ -191,4 +191,153 @@ module UI =
 
         // Add tab control to form
         form.Controls.Add(tabControl)
+        // Login Button Click Event
+        loginButton.Click.Add(fun _ -> 
+            let username = loginUsernameBox.Text.Trim()
+            let password = loginPasswordBox.Text.Trim()
+
+            match Logic.authenticateUser username password with
+            | Ok (user, cart) -> 
+                MessageBox.Show("Login Successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information) |> ignore
+                form.DialogResult <- DialogResult.OK
+                form.Tag <- (user, cart) // Store user and cart in form's Tag
+                form.Close()
+            | Error msg -> 
+                MessageBox.Show(msg, "Login Error", MessageBoxButtons.OK, MessageBoxIcon.Error) |> ignore
+        )
+
+        // Signup Button Click Event
+        signupButton.Click.Add(fun _ -> 
+            let username = signupUsernameBox.Text.Trim()
+            let password = signupPasswordBox.Text.Trim()
+            let email = signupEmailBox.Text.Trim()
+
+            match Logic.registerUser username password email with
+            | Ok user -> 
+                MessageBox.Show("Registration Successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information) |> ignore
+                form.DialogResult <- DialogResult.OK
+                form.Tag <- (user, { Items = [] }) // Initialize empty cart
+                form.Close()
+            | Error msg -> 
+                MessageBox.Show(msg, "Registration Error", MessageBoxButtons.OK, MessageBoxIcon.Error) |> ignore
+        )
+
+        form
+
+    // Function to save the updated cart to JSON
+    let saveCartToJson (cart: Cart) =
+        let json = JsonConvert.SerializeObject(cart)
+        File.WriteAllText("./Cart.json", json)
+
+    // Product card creation function
+    let createProductCard (product: Product) (quantity: int) =
+        let productCard = new Panel(
+            Width = 200,
+            Height = 380,
+            BackColor = Color.White,
+            BorderStyle = BorderStyle.FixedSingle,
+            Margin = new Padding(10)
+        )
+
+        let productImage = new PictureBox(
+            SizeMode = PictureBoxSizeMode.Zoom,
+            Width = 200,
+            Height = 200
+        )
+        try 
+            productImage.Image <- Image.FromFile(product.ImageURL)
+        with 
+        | _ -> productImage.BackColor <- Color.LightGray
+
+        let nameLabel = new Label(
+            Text = product.Name, 
+            Top = 210, 
+            Left = 0, 
+            Width = 200, 
+            Height = 30,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = primaryColor
+        )
+
+        let priceLabel = new Label(
+            Text = sprintf "$%.2f" product.Price, 
+            Top = 240, 
+            Left = 0, 
+            Width = 200, 
+            Height = 30,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = accentColor
+        )
+
+        let descriptionLabel = new Label(
+            Text = product.Description,
+            Top = 270,
+            Left = 0,
+            Width = 200,
+            Height = 50,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = primaryColor
+        )
+
+        let quantityLabel = new Label(
+            Text = sprintf "Available: %d" quantity, 
+            Top = 320, 
+            Left = 0, 
+            Width = 200, 
+            Height = 30,
+            TextAlign = ContentAlignment.MiddleCenter,
+            ForeColor = primaryColor
+        )
+
+        let buyButton = new Button(
+            Text = "Add to Cart", 
+            Top = 350, 
+            Left = 0, 
+            Width = 200, 
+            Height = 30,
+            BackColor = primaryColor,
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat
+        )
+        buyButton.FlatAppearance.BorderSize <- 0
+
+        productCard.Controls.AddRange([|
+        productImage; 
+            nameLabel; 
+            priceLabel; 
+            descriptionLabel; 
+            quantityLabel;
+            buyButton 
+        |])
+        
+        // Tag the buy button for easy identification
+        buyButton.Tag <- (product, quantityLabel)
+        
+        productCard
+
+    let createMainForm (user: User) (initialCart: Cart) (products: Product list) =
+        // Declare currentCart and currentProducts as mutable
+        let mutable currentCart = initialCart
+        let mutable currentProducts = products
+        
+        // Set up form with modern styling
+        let form = new Form(
+            Text = "Simple Store", 
+            Width = 1000, 
+            Height = 750,
+            BackColor = primaryColor, 
+            StartPosition = FormStartPosition.CenterScreen
+        )
+
+        // Welcome Label
+        let welcomeLabel = new Label(
+            Text = sprintf "Hello, %s!" user.Username,
+            Top = 10,
+            Left = 10,
+            Width = 300,
+            Height = 30,
+            ForeColor = Color.White,
+            Font = new Font("Arial", 14f, FontStyle.Bold)
+        )
+        form.Controls.Add(welcomeLabel)
 
