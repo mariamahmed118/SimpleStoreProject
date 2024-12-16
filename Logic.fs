@@ -1,5 +1,3 @@
-//hiiiiiiii
-//1111
 module Logic
 open System
 open SimpleStore.Models
@@ -14,6 +12,7 @@ let registerUser (username: string) (password: string) (email: string) =
             PasswordHash = hashPassword password
             Email = email
             CreatedAt = DateTime.UtcNow
+            Cart = None
         }
         let users = loadUsers()
         saveUsers (newUser :: users)
@@ -22,53 +21,80 @@ let registerUser (username: string) (password: string) (email: string) =
 let authenticateUser (username: string) (password: string) =
     let users = loadUsers()
     let hashedPassword = hashPassword password
-    users 
-    |> List.tryFind (fun u -> u.Username = username && u.PasswordHash = hashedPassword)
-    |> function
-    | Some user -> Ok user
+    match users |> List.tryFind (fun u -> u.Username = username && u.PasswordHash = hashedPassword) with
+    | Some user -> 
+        let cart = user.Cart |> Option.defaultValue { Items = [] }
+        Ok (user, cart)
     | None -> Error "Invalid username or password"
 
-
 // Cart Management
-let addToCart (cart: Cart) (product: Product) =
-    match cart.Items |> List.tryFind (fun item -> item.Product.Name = product.Name) with
-    | Some item ->
-        { cart with Items = cart.Items |> List.map (fun i -> if i.Product.Name = item.Product.Name then { i with Quantity = i.Quantity + 1 } else i) }
-    | None ->
-        { cart with Items = { Product = product; Quantity = 1 } :: cart.Items }
+let addToCart (username: string) (cart: Cart) (product: Product) (products: Product list) =
+    // Find the current product in the product list
+    let currentProduct = 
+        products 
+        |> List.tryFind (fun p -> p.Name = product.Name)
+        |> Option.defaultValue product
+
+    // Check if there's enough quantity available
+    let availableQuantity = 
+        cart.Items 
+        |> List.tryFind (fun item -> item.Product.Name = product.Name)
+        |> Option.map (fun item -> currentProduct.Quantity - item.Quantity)
+        |> Option.defaultValue currentProduct.Quantity
+
+    if availableQuantity > 0 then
+        let updatedCart =
+            match cart.Items |> List.tryFind (fun item -> item.Product.Name = product.Name) with
+            | Some item ->
+                // Increase quantity correctly
+                let newQuantity = item.Quantity + 1
+                { cart with Items = cart.Items |> List.map (fun i -> if i.Product.Name = item.Product.Name then { i with Quantity = newQuantity } else i) }
+            | None ->
+                { cart with Items = { Product = product; Quantity = 1 } :: cart.Items }
+
+        // Save the updated cart for the user
+        updateUserCart username updatedCart
+        Ok updatedCart
+    else
+        Error "Not enough quantity available"
+
+let removeItemFromCart (username: string) (cart: Cart) (productName: string) =
+    let updatedCart =
+        match cart.Items |> List.tryFind (fun item -> item.Product.Name = productName) with
+        | Some item when item.Quantity > 1 ->
+            // Decrease quantity correctly
+            let newQuantity = item.Quantity - 1
+            { cart with Items = cart.Items |> List.map (fun i -> if i.Product.Name = productName then { i with Quantity = newQuantity } else i) }
+        | Some item when item.Quantity = 1 ->
+            { cart with Items = cart.Items |> List.filter (fun i -> i.Product.Name <> productName) }
+        | None -> cart        
+        | Some _ -> failwith "Not Implemented"
+
+    // Save the updated cart for the user
+    updateUserCart username updatedCart
+    updatedCart
 
 let calculateTotal (cart: Cart) =
     cart.Items |> List.fold (fun acc item -> acc + (item.Product.Price * decimal(item.Quantity))) 0M
 
-// Search Functions
-let removeItemFromCart (cart: Cart) (productName: string) =
-    match cart.Items |> List.tryFind (fun item -> item.Product.Name = productName) with
-    | Some item when item.Quantity > 1 ->
-        { cart with Items = cart.Items |> List.map (fun i -> if i.Product.Name = item.Product.Name then { i with Quantity = i.Quantity - 1 } else i) }
-    | Some item when item.Quantity = 1 ->
-        { cart with Items = cart.Items |> List.filter (fun i -> i.Product.Name <> productName) }
-    | None -> cart    
-    | Some(_) -> failwith "Not Implemented"
-// Search Products Function
-let searchProducts (products: Product list) (searchTerm: string) =
-    products 
-    |> List.filter (fun product -> 
-        product.Name.ToLower().Contains(searchTerm.ToLower()) || 
-        product.Description.ToLower().Contains(searchTerm.ToLower())
+let updateProductQuantities (products: Product list) (cart: Cart) =
+    products
+    |> List.map (fun product ->
+        let cartQuantity = 
+            cart.Items 
+            |> List.tryFind (fun item -> item.Product.Name = product.Name)
+            |> Option.map (fun item -> item.Quantity)
+            |> Option.defaultValue 0
+        
+        // Adjust the product's available quantity based on cart items
+        { product with Quantity = max 0 (product.Quantity - cartQuantity) }
     )
 
-// Payment Processing Function
-let processPayment (username: string) (cart: Cart) (paymentMethod: PaymentMethod) =
-    let total = calculateTotal cart
-    let transaction = {
-        Id = Guid.NewGuid()
-        UserId = username
-        Amount = total
-        Date = DateTime.UtcNow
-        PaymentMethod = paymentMethod
-        Status = Completed
-    }
+let calculateAvailableQuantity (product: Product) (cart: Cart) =
+    let cartQuantity = 
+        cart.Items 
+        |> List.tryFind (fun item -> item.Product.Name = product.Name)
+        |> Option.map (fun item -> item.Quantity)
+        |> Option.defaultValue 0
     
-    // Update user account and return transaction
-    updateUserAccount username transaction    
-
+    max 0 (product.Quantity - cartQuantity)
