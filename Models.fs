@@ -23,29 +23,5 @@ module Models =
         PasswordHash: string
         Email: string
         CreatedAt: System.DateTime
-    }
-
-    type PaymentMethod =
-    | CreditCard of cardNumber: string * expiryDate: string * cvv: string
-    | PayPal of email: string
-    | BankTransfer of accountNumber: string
-
-    type TransactionStatus =
-    | Pending
-    | Completed
-    | Failed
-
-    type Transaction = {
-        Id: System.Guid
-        UserId: string
-        Amount: decimal
-        Date: System.DateTime
-        PaymentMethod: PaymentMethod
-        Status: TransactionStatus
-    }
-
-    type UserAccount = {
-        Username: string
-        Balance: decimal
-        Transactions: Transaction list
+        Cart: Cart option
     }
